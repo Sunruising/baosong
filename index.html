@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="把税局收到的亚马逊报送数和卖家后台数之间的差额拆开讲清楚。数据只在你自己的浏览器里计算，不上传。">
+<title>亚马逊涉税报送差异拆解 · 免费版</title>
+<style>
+:root {
+  --bg: #f5f6f8; --card: #ffffff; --line: #e2e5ea; --line-strong: #cfd4db;
+  --text: #1c2430; --muted: #637083; --primary: #1d5c8c; --primary-weak: #e8f0f7;
+  --accent: #0f766e; --accent-weak: #e6f4f2; --warn: #a15c07; --warn-weak: #fdf3e2;
+  --good: #1f7a3d; --good-weak: #e8f5ec; --radius: 8px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 15px/1.7 -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Segoe UI", sans-serif;
+}
+.wrap { max-width: 920px; margin: 0 auto; padding: 0 20px; }
+.muted { color: var(--muted); }
+b { font-weight: 600; }
+a { color: var(--primary); }
+.topbar { background: var(--card); border-bottom: 1px solid var(--line); }
+.topbar .wrap { display: flex; align-items: center; gap: 14px; padding-top: 16px; padding-bottom: 14px; }
+.logo { width: 40px; height: 40px; border-radius: 9px; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 20px; flex: none; }
+h1 { font-size: 20px; margin: 0; letter-spacing: .2px; }
+.tag { font-size: 12px; font-weight: 500; color: var(--accent); background: var(--accent-weak); border-radius: 4px; padding: 1px 6px; vertical-align: 3px; margin-left: 4px; }
+.hero { padding: 36px 0 8px; }
+.hero h2 { font-size: 26px; line-height: 1.4; margin: 0 0 12px; }
+.hero p { margin: 0 0 8px; color: var(--muted); font-size: 16px; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 22px 0 6px; }
+.btn { display: inline-block; text-decoration: none; font: inherit; font-size: 17px; font-weight: 600; padding: 13px 30px; border-radius: var(--radius); border: 1px solid var(--line-strong); background: var(--card); color: var(--text); text-align: center; }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+.btn.accent { background: var(--accent-weak); border-color: #b9ddd8; color: var(--accent); }
+.btn.small { font-size: 14px; font-weight: 500; padding: 8px 18px; }
+.btn:hover { filter: brightness(.96); }
+section.panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 24px 22px; margin-top: 18px; }
+section.panel h3 { font-size: 17px; margin: 0 0 10px; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.card { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; background: #fbfcfd; }
+.card b { display: block; margin-bottom: 4px; }
+.card span { color: var(--muted); font-size: 13.5px; line-height: 1.55; display: block; }
+.privacy { background: var(--good-weak); border-color: #cfe8d6; }
+.privacy ul { margin: 0; padding-left: 20px; }
+.privacy li { margin: 4px 0; }
+.disclaimer { background: var(--warn-weak); border-color: #f0dcb4; }
+.disclaimer p, section.panel p { margin: 0; }
+.offline p { margin-bottom: 12px; }
+.counter-note { font-size: 13px; color: var(--muted); }
+footer { padding: 22px 0 40px; }
+code { background: #eef1f4; border-radius: 4px; padding: 1px 5px; font-size: 13.5px; }
+@media (max-width: 720px) {
+  .hero { padding-top: 24px; }
+  .hero h2 { font-size: 22px; }
+  .cards { grid-template-columns: 1fr; }
+  .cta { flex-direction: column; }
+  .btn { width: 100%; }
+  .btn.small { width: auto; }
+  h1 { font-size: 18px; }
+  section.panel { padding: 16px 16px 18px; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <div class="logo" aria-hidden="true">差</div>
+    <h1>亚马逊涉税报送差异拆解 <span class="tag">免费版</span></h1>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <h2>把“税局收到的亚马逊报送数”和“后台数”之间的差额，拆开讲清楚</h2>
+    <p>把亚马逊发来的季度涉税报告，加上卖家后台导出的报告拖进网页，差额会被拆成汇率、收入构成、代收代缴税费、时间口径等几项原因，每一项都能追到原始文件的具体行，也能导出 Excel。</p>
+    <div class="cta">
+      <a class="btn primary" href="tool.html">打开工具</a>
+      <a class="btn accent" href="tool.html?demo=1">先看示例</a>
+    </div>
+    <p class="muted" style="font-size:13.5px">示例数据全部是虚构的，不需要准备任何文件。</p>
+  </div>
+
+  <section class="panel">
+    <h3>能处理哪些报告</h3>
+    <div class="cards">
+      <div class="card"><b>季度报告</b><span>亚马逊邮件里的季度涉税报告（xlsx），多个卖家记号、多个季度可以一起传。</span></div>
+      <div class="card"><b>日期范围报告</b><span>卖家后台“日期范围报告”里的交易报告（csv），每个站点一份，日期选整季。</span></div>
+      <div class="card"><b>亚马逊配送货件报告</b><span>报告 → 配送 → 亚马逊配送货件（txt），逐月导出。用来按发货日对齐季度，强烈建议提供。</span></div>
+    </div>
+    <p class="muted" style="margin-top:12px;font-size:13.5px">另外还可以选择性提供 fees 逐笔费用文件、欧洲站增值税交易报告（VTR），用来核对费用和代收增值税。导出前请先把卖家后台切换到英文界面。</p>
+  </section>
+
+  <section class="panel privacy">
+    <h3>隐私：你的数据不会离开你的电脑</h3>
+    <ul>
+      <li>所有计算都在你自己的浏览器里完成，<b>文件不上传</b>，没有服务器接收你的数据。</li>
+      <li>工具页设置了内容安全策略，浏览器层面禁止它发出任何网络请求，<b>断网也能用</b>。</li>
+      <li>想自己验证？打开工具页，按 <code>F12</code> 打开开发者工具，切到“网络（Network）”，再拖入文件计算：除了打开页面本身，列表里不会出现任何请求。</li>
+    </ul>
+  </section>
+
+  <section class="panel offline">
+    <h3>离线版</h3>
+    <p>也可以把工具下载成一个 HTML 文件，双击用浏览器打开就能用，不需要网络，内容和在线工具页一致。</p>
+    <a class="btn small" href="https://github.com/Sunruising/baosong/releases/latest/download/baosong-offline.html">下载离线版</a>
+  </section>
+
+  <section class="panel disclaimer">
+    <h3>免责声明</h3>
+    <p>本工具只做数据整理和差异解释，<b>不构成税务意见</b>。它不计算应补多少税、应申报多少，也不评价哪种申报口径是否合规。涉及申报和补税的决定，请咨询你的税务顾问。</p>
+  </section>
+
+  <section class="panel">
+    <h3>反馈</h3>
+    <p>反馈：知无不言社区帖子（链接稍后补）</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap counter-note">本页只统计打开次数，工具页不联网。</div>
+</footer>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body>
+</html>
