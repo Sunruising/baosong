@@ -37,6 +37,9 @@ h1 { font-size: 20px; margin: 0; letter-spacing: .2px; }
 .btn.small { font-size: 14px; font-weight: 500; padding: 8px 18px; }
 .btn:hover { filter: brightness(.96); }
 section.panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 24px 22px; margin-top: 18px; }
+.contact { display: flex; align-items: center; gap: 24px; }
+.contact img { width: 160px; height: 160px; flex: none; image-rendering: pixelated; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+.contact .contact-text p { margin-bottom: 12px; }
 section.panel h3 { font-size: 17px; margin: 0 0 10px; }
 .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .card { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; background: #fbfcfd; }
@@ -60,6 +63,7 @@ code { background: #eef1f4; border-radius: 4px; padding: 1px 5px; font-size: 13.
   .btn.small { width: auto; }
   h1 { font-size: 18px; }
   section.panel { padding: 16px 16px 18px; }
+  .contact { flex-direction: column; align-items: flex-start; gap: 14px; }
 }
 </style>
 </head>
@@ -105,6 +109,17 @@ code { background: #eef1f4; border-radius: 4px; padding: 1px 5px; font-size: 13.
     <h3>离线版</h3>
     <p>也可以把工具下载成一个 HTML 文件，双击用浏览器打开就能用，不需要网络，内容和在线工具页一致。</p>
     <a class="btn small" href="https://github.com/Sunruising/baosong/releases/latest/download/baosong-offline.html">下载离线版</a>
+  </section>
+
+  <section class="panel" id="contact">
+    <h3>联系我们</h3>
+    <div class="contact">
+      <img src="data:image/png;base64,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" width="160" height="160" alt="企业微信二维码">
+      <div class="contact-text">
+        <p>对不上、算不清、想批量用或要定制，扫码加企业微信聊。发文件前请先去掉店铺名、订单号等敏感信息。</p>
+        <a class="btn small accent" href="https://work.weixin.qq.com/u/vca844afe8424cde7c?src=wx&amp;bb=f8" rel="noopener">手机上点这里添加</a>
+      </div>
+    </div>
   </section>
 
   <section class="panel disclaimer">
