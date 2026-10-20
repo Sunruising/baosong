@@ -3,139 +3,791 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="把税局收到的亚马逊报送数和卖家后台数之间的差额拆开讲清楚。数据只在你自己的浏览器里计算，不上传。">
+<meta name="description" content="收到税局的报送差异提醒？把亚马逊季度涉税报告和卖家后台报告拖进网页，把差额拆成汇率、税费、时间口径等几项。数据只在你自己的浏览器里计算，不上传。">
 <title>亚马逊涉税报送差异拆解 · 免费版</title>
 <style>
 :root {
-  --bg: #f5f6f8; --card: #ffffff; --line: #e2e5ea; --line-strong: #cfd4db;
-  --text: #1c2430; --muted: #637083; --primary: #1d5c8c; --primary-weak: #e8f0f7;
-  --accent: #0f766e; --accent-weak: #e6f4f2; --warn: #a15c07; --warn-weak: #fdf3e2;
-  --good: #1f7a3d; --good-weak: #e8f5ec; --radius: 8px;
+  --navy-950: #0c1c2e; --navy-900: #0f2a43; --navy-800: #153a5a;
+  --primary: #1d5c8c; --primary-dark: #164a73; --primary-tint: #e8f0f7; --primary-line: #c6d9e9;
+  --teal: #0f766e; --teal-tint: #e6f4f2; --teal-line: #b7ddd8;
+  --amber: #a15c07; --amber-tint: #fdf3e2;
+  --g50: #f6f8fa; --g100: #eef1f5; --g200: #e1e6ec; --g300: #cbd3dd; --g500: #5f6d80; --g700: #38434f; --g900: #16202c;
+  --radius: 16px; --radius-sm: 10px;
+  --shadow-sm: 0 1px 2px rgba(15, 42, 67, .05);
+  --shadow-md: 0 8px 24px -8px rgba(15, 42, 67, .14), 0 2px 6px rgba(15, 42, 67, .05);
+  --shadow-lg: 0 24px 56px -16px rgba(15, 42, 67, .22), 0 4px 12px rgba(15, 42, 67, .06);
+  --nav-h: 64px;
 }
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 16px); -webkit-text-size-adjust: 100%; }
 html, body { margin: 0; padding: 0; }
 body {
-  background: var(--bg); color: var(--text);
-  font: 15px/1.7 -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Segoe UI", sans-serif;
+  background: #fff; color: var(--g900);
+  font: 16px/1.7 -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
-.wrap { max-width: 920px; margin: 0 auto; padding: 0 20px; }
-.muted { color: var(--muted); }
+h1, h2, h3, h4, p, ul, ol { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
 b { font-weight: 600; }
 a { color: var(--primary); }
-.topbar { background: var(--card); border-bottom: 1px solid var(--line); }
-.topbar .wrap { display: flex; align-items: center; gap: 14px; padding-top: 16px; padding-bottom: 14px; }
-.logo { width: 40px; height: 40px; border-radius: 9px; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 20px; flex: none; }
-h1 { font-size: 20px; margin: 0; letter-spacing: .2px; }
-.tag { font-size: 12px; font-weight: 500; color: var(--accent); background: var(--accent-weak); border-radius: 4px; padding: 1px 6px; vertical-align: 3px; margin-left: 4px; }
-.hero { padding: 36px 0 8px; }
-.hero h2 { font-size: 26px; line-height: 1.4; margin: 0 0 12px; }
-.hero p { margin: 0 0 8px; color: var(--muted); font-size: 16px; }
-.cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 22px 0 6px; }
-.btn { display: inline-block; text-decoration: none; font: inherit; font-size: 17px; font-weight: 600; padding: 13px 30px; border-radius: var(--radius); border: 1px solid var(--line-strong); background: var(--card); color: var(--text); text-align: center; }
-.btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
-.btn.accent { background: var(--accent-weak); border-color: #b9ddd8; color: var(--accent); }
-.btn.small { font-size: 14px; font-weight: 500; padding: 8px 18px; }
-.btn:hover { filter: brightness(.96); }
-section.panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 24px 22px; margin-top: 18px; }
-.contact { display: flex; align-items: center; gap: 24px; }
-.contact img { width: 160px; height: 160px; flex: none; image-rendering: pixelated; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
-.contact .contact-text p { margin-bottom: 12px; }
-section.panel h3 { font-size: 17px; margin: 0 0 10px; }
-.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.card { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; background: #fbfcfd; }
-.card b { display: block; margin-bottom: 4px; }
-.card span { color: var(--muted); font-size: 13.5px; line-height: 1.55; display: block; }
-.privacy { background: var(--good-weak); border-color: #cfe8d6; }
-.privacy ul { margin: 0; padding-left: 20px; }
-.privacy li { margin: 4px 0; }
-.disclaimer { background: var(--warn-weak); border-color: #f0dcb4; }
-.disclaimer p, section.panel p { margin: 0; }
-.offline p { margin-bottom: 12px; }
-.counter-note { font-size: 13px; color: var(--muted); }
-footer { padding: 22px 0 40px; }
-code { background: #eef1f4; border-radius: 4px; padding: 1px 5px; font-size: 13.5px; }
+img, svg { display: block; max-width: 100%; }
+.container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.ico { width: 24px; height: 24px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.ico.sm { width: 18px; height: 18px; }
+:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; border-radius: 6px; }
+
+/* ---------- 按钮 ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 48px; padding: 0 24px; border-radius: var(--radius-sm);
+  font: inherit; font-size: 16px; font-weight: 600; line-height: 1; text-decoration: none; white-space: nowrap; cursor: pointer;
+  border: 1px solid var(--g300); background: #fff; color: var(--navy-900);
+  box-shadow: var(--shadow-sm);
+  transition: background-color .18s, border-color .18s, box-shadow .18s, transform .18s, color .18s;
+}
+.btn:hover { border-color: var(--primary); color: var(--primary-dark); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.btn:active { transform: translateY(0); box-shadow: var(--shadow-sm); background: var(--g100); }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; box-shadow: 0 6px 16px -6px rgba(29, 92, 140, .6); }
+.btn.primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); color: #fff; box-shadow: 0 10px 22px -8px rgba(29, 92, 140, .7); }
+.btn.primary:active { background: var(--navy-900); border-color: var(--navy-900); box-shadow: none; }
+.btn.sm { height: 40px; padding: 0 18px; font-size: 15px; }
+.btn .ico { width: 18px; height: 18px; }
+.btn .free { display: inline-block; font-size: 14px; font-weight: 800; letter-spacing: .5px; line-height: 1.35; padding: 3px 9px; border-radius: 7px; background: #f59e0b; color: #2b1700; box-shadow: 0 2px 6px -1px rgba(245, 158, 11, .55); }
+.btn.light { background: #fff; border-color: #fff; color: var(--navy-900); box-shadow: 0 8px 20px -8px rgba(0, 0, 0, .4); }
+.btn.light:hover { background: var(--primary-tint); border-color: var(--primary-tint); color: var(--navy-900); }
+.btn.light:active { background: var(--primary-line); }
+.btn.light .free { background: var(--teal); color: #fff; box-shadow: 0 2px 6px -1px rgba(15, 118, 110, .5); }
+.btn.ghost { background: transparent; border-color: rgba(255, 255, 255, .5); color: #fff; box-shadow: none; }
+.btn.ghost:hover { background: rgba(255, 255, 255, .12); border-color: #fff; color: #fff; }
+.btn.ghost:active { background: rgba(255, 255, 255, .2); }
+.btn .arrow { transition: transform .18s; }
+.btn:hover .arrow { transform: translateX(3px); }
+
+/* ---------- 顶部导航 ---------- */
+.nav { position: sticky; top: 0; z-index: 50; background: rgba(255, 255, 255, .88); -webkit-backdrop-filter: saturate(180%) blur(12px); backdrop-filter: saturate(180%) blur(12px); border-bottom: 1px solid transparent; transition: box-shadow .2s, border-color .2s; }
+.nav.scrolled { border-bottom-color: var(--g200); box-shadow: 0 4px 16px -8px rgba(15, 42, 67, .18); }
+.nav .container { height: var(--nav-h); display: flex; align-items: center; gap: 32px; }
+.brand { display: flex; align-items: center; gap: 12px; color: var(--g900); text-decoration: none; font-weight: 650; font-size: 17px; letter-spacing: .2px; white-space: nowrap; }
+.logo { position: relative; width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(145deg, #2b78b0, var(--navy-800)); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 19px; line-height: 1; flex: none; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18), 0 2px 6px -1px rgba(15, 42, 67, .35); }
+.logo::after { content: ""; position: absolute; right: -3px; bottom: -3px; width: 10px; height: 10px; border-radius: 50%; background: #14b8a6; border: 2px solid #fff; }
+.nav-tag { font-size: 12px; font-weight: 500; color: var(--teal); background: var(--teal-tint); border-radius: 999px; padding: 1px 10px; margin-left: -4px; }
+.nav-links { display: flex; gap: 28px; margin-left: auto; }
+.nav-links a { color: var(--g700); text-decoration: none; font-size: 15px; padding: 6px 0; border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; }
+.nav-links a:hover { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* ---------- 首屏 ---------- */
+.hero { position: relative; overflow: hidden; padding: 72px 0 88px; background:
+  radial-gradient(900px 520px at 88% -10%, rgba(29, 92, 140, .13), transparent 62%),
+  radial-gradient(640px 420px at -5% 105%, rgba(15, 118, 110, .09), transparent 60%),
+  #fff; }
+.hero::before { content: ""; position: absolute; inset: 0; background-image: linear-gradient(var(--g200) 1px, transparent 1px), linear-gradient(90deg, var(--g200) 1px, transparent 1px); background-size: 48px 48px; opacity: .55; -webkit-mask-image: radial-gradient(ellipse 70% 80% at 70% 30%, #000, transparent 75%); mask-image: radial-gradient(ellipse 70% 80% at 70% 30%, #000, transparent 75%); pointer-events: none; }
+.hero .container { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.04fr); gap: 56px; align-items: center; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--teal); letter-spacing: .3px; }
+.eyebrow::before { content: ""; width: 20px; height: 2px; background: currentColor; border-radius: 2px; }
+.hero h1 { margin-top: 16px; font-size: 30px; line-height: 1.28; letter-spacing: -.2px; font-weight: 750; color: var(--navy-950); }
+.hero h1 span { display: block; color: var(--primary); }
+.hero .lead { margin-top: 20px; font-size: 18px; line-height: 1.75; color: var(--g700); max-width: 30em; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.cta-note { margin-top: 20px; font-size: 14px; color: var(--g700); display: flex; flex-wrap: wrap; gap: 6px 20px; }
+.cta-note span { display: inline-flex; align-items: center; gap: 6px; }
+.cta-note .ico { color: var(--teal); width: 18px; height: 18px; stroke-width: 2.25; }
+.free-pill { display: inline-flex; align-items: center; gap: 8px; padding: 5px 14px 5px 10px; border-radius: 999px; background: var(--teal-tint); border: 1px solid var(--teal-line); color: var(--teal); font-size: 14px; font-weight: 600; letter-spacing: .2px; }
+.free-pill .ico { width: 16px; height: 16px; stroke-width: 2.25; }
+.hero-text > * { animation: rise .6s cubic-bezier(.2, .7, .2, 1) both; }
+.hero-text > :nth-child(2) { animation-delay: .06s; } .hero-text > :nth-child(3) { animation-delay: .12s; } .hero-text > :nth-child(4) { animation-delay: .18s; } .hero-text > :nth-child(5) { animation-delay: .24s; }
+.hero-visual { position: relative; animation: rise .7s .15s cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* 示意图卡片 */
+.chip { position: absolute; left: 24px; bottom: -42px; display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: #fff; border: 1px solid var(--g200); border-radius: 12px; box-shadow: var(--shadow-md); font-size: 14px; color: var(--g900); }
+.chip i { width: 8px; height: 8px; border-radius: 50%; background: #d97706; box-shadow: 0 0 0 4px var(--amber-tint); }
+.chip b { color: var(--amber); }
+.diagram { background: #fff; border: 1px solid var(--g200); border-radius: 20px; box-shadow: var(--shadow-lg); overflow: hidden; }
+.diagram-head { display: flex; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--g200); background: var(--g50); font-size: 14px; }
+.diagram-head .dots { display: flex; gap: 6px; }
+.diagram-head .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--g300); }
+.diagram-head b { color: var(--g700); font-weight: 600; }
+.diagram-head .free-tag { font-size: 12px; font-weight: 600; color: var(--teal); background: var(--teal-tint); border: 1px solid var(--teal-line); border-radius: 999px; padding: 0 8px; }
+.diagram-head .badge { margin-left: auto; font-size: 12px; color: var(--amber); background: var(--amber-tint); border-radius: 999px; padding: 1px 10px; font-weight: 600; }
+.diagram-body { padding: 20px 20px 8px; }
+.diagram svg { width: 100%; height: auto; overflow: visible; }
+.diagram text { font-family: inherit; }
+.diagram-foot { display: flex; flex-wrap: wrap; gap: 6px 20px; padding: 12px 20px 16px; font-size: 13px; color: var(--g500); }
+.diagram-foot .key { display: inline-flex; align-items: center; gap: 6px; }
+.diagram-foot .key i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.diagram-note { padding: 12px 20px; border-top: 1px dashed var(--g200); font-size: 13px; color: var(--g500); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.diagram-note b { color: var(--teal); }
+
+/* ---------- 信任条 ---------- */
+.trust { background: #fff; border-top: 1px solid var(--g200); border-bottom: 1px solid var(--g200); }
+.trust ul { display: grid; grid-template-columns: repeat(4, 1fr); }
+.trust li { display: flex; gap: 14px; align-items: flex-start; padding: 28px 20px; border-left: 1px solid var(--g200); }
+.trust li:first-child { border-left: 0; padding-left: 0; }
+.trust .ico { color: var(--primary); width: 28px; height: 28px; margin-top: 2px; }
+.trust b { display: block; color: var(--navy-950); font-size: 16px; line-height: 1.5; }
+.trust span { display: block; margin-top: 2px; font-size: 14px; line-height: 1.6; color: var(--g500); }
+
+/* ---------- 通用节 ---------- */
+.section { padding: 96px 0; }
+.section.alt { background: var(--g50); }
+.sec-head { max-width: 680px; margin-bottom: 48px; }
+.sec-head h2 { margin-top: 12px; font-size: 28px; line-height: 1.35; letter-spacing: -.1px; color: var(--navy-950); font-weight: 750; }
+.sec-head p { margin-top: 12px; color: var(--g700); }
+
+/* ---------- 差额拆成哪几块 ---------- */
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.card { position: relative; background: #fff; border: 1px solid var(--g200); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); transition: transform .2s, box-shadow .2s, border-color .2s; }
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--g300); }
+.card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.card .icon { width: 44px; height: 44px; border-radius: 12px; background: var(--primary-tint); color: var(--primary); display: grid; place-items: center; }
+.card .num { font-size: 14px; font-weight: 600; letter-spacing: 1px; color: var(--g500); font-variant-numeric: tabular-nums; }
+.card h3 { font-size: 17px; line-height: 1.4; color: var(--navy-950); }
+.card p { margin-top: 8px; font-size: 15px; line-height: 1.7; color: var(--g700); }
+.card .tagline { display: inline-block; margin-top: 12px; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 1px 10px; }
+.tag-info { background: var(--g100); color: var(--g700); }
+.tag-warn { background: var(--amber-tint); color: var(--amber); }
+.card.hot .icon { background: var(--teal-tint); color: var(--teal); }
+.callout { display: flex; gap: 16px; align-items: flex-start; margin-top: 32px; padding: 20px 24px; border-radius: var(--radius); background: var(--teal-tint); border: 1px solid var(--teal-line); color: var(--g900); }
+.callout .ico { color: var(--teal); margin-top: 2px; }
+.callout b { color: var(--teal); }
+
+/* ---------- 三步 ---------- */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; counter-reset: s; }
+.step { position: relative; }
+.step:not(:last-child)::after { content: ""; position: absolute; top: 22px; right: -34px; width: 10px; height: 10px; border-top: 2px solid var(--g300); border-right: 2px solid var(--g300); transform: rotate(45deg); }
+.step-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.step-no { width: 44px; height: 44px; border-radius: 50%; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 18px; flex: none; box-shadow: 0 0 0 6px var(--primary-tint); }
+.step-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--g300), transparent); }
+.step h3 { font-size: 18px; color: var(--navy-950); }
+.step p { margin-top: 8px; font-size: 15px; color: var(--g700); }
+.reports { margin-top: 56px; background: #fff; border: 1px solid var(--g200); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+.reports-head { padding: 18px 28px; background: var(--g50); border-bottom: 1px solid var(--g200); font-weight: 650; color: var(--navy-950); display: flex; align-items: center; gap: 10px; }
+.reports-head .ico { color: var(--primary); }
+.report { display: grid; grid-template-columns: 280px minmax(0, 1fr) auto; gap: 8px 24px; align-items: center; padding: 18px 28px; border-bottom: 1px solid var(--g200); }
+.report:last-of-type { border-bottom: 0; }
+.report .name { font-weight: 600; color: var(--navy-950); }
+.report .name small { margin-left: 6px; font-weight: 500; font-size: 12px; color: var(--g500); background: var(--g100); border-radius: 4px; padding: 1px 6px; }
+.report .how { font-size: 15px; color: var(--g700); }
+.pill { font-size: 13px; font-weight: 600; border-radius: 999px; padding: 2px 12px; white-space: nowrap; }
+.pill.must { background: var(--primary-tint); color: var(--primary-dark); }
+.pill.rec { background: var(--teal-tint); color: var(--teal); }
+.pill.opt { background: var(--g100); color: var(--g700); }
+.reports-note { display: flex; gap: 12px; align-items: flex-start; padding: 16px 28px; background: var(--amber-tint); color: #6b3e04; font-size: 15px; border-top: 1px solid #f1dfbb; }
+.reports-note .ico { color: var(--amber); margin-top: 3px; }
+
+/* ---------- 隐私 ---------- */
+.privacy { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 56px; align-items: center; padding: 56px; border-radius: 24px; color: #dbe6f0; background:
+  radial-gradient(560px 320px at 0% 0%, rgba(45, 140, 200, .28), transparent 70%),
+  radial-gradient(420px 300px at 100% 100%, rgba(20, 184, 166, .16), transparent 70%),
+  linear-gradient(160deg, var(--navy-800), var(--navy-950)); box-shadow: var(--shadow-lg); }
+.privacy .eyebrow { color: #5eead4; }
+.privacy h2 { margin-top: 12px; font-size: 28px; line-height: 1.35; color: #fff; font-weight: 750; }
+.privacy .lead { margin-top: 12px; color: #c3d3e2; }
+.points { margin-top: 24px; display: grid; gap: 12px; }
+.points li { display: flex; gap: 12px; align-items: flex-start; color: #e6eef6; }
+.points .ico { color: #5eead4; margin-top: 3px; width: 20px; height: 20px; }
+.points b { color: #fff; }
+.verify { margin-top: 28px; padding: 20px 24px; border-radius: 14px; background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .14); }
+.verify h3 { font-size: 15px; color: #fff; display: flex; align-items: center; gap: 8px; }
+.verify ol { margin-top: 12px; display: grid; gap: 8px; counter-reset: v; }
+.verify li { counter-increment: v; position: relative; padding-left: 32px; font-size: 15px; color: #d4e0ec; }
+.verify li::before { content: counter(v); position: absolute; left: 0; top: 2px; width: 22px; height: 22px; border-radius: 50%; background: rgba(94, 234, 212, .18); color: #5eead4; font-size: 12px; font-weight: 700; display: grid; place-items: center; line-height: 1; }
+kbd { font: inherit; font-size: 13px; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .22); border-bottom-width: 2px; border-radius: 5px; padding: 0 6px; color: #fff; }
+.privacy-visual svg { width: 100%; max-width: 420px; height: auto; margin: 0 auto; overflow: visible; }
+.privacy-visual text { font-family: inherit; }
+
+/* ---------- 离线版 ---------- */
+.offline-sec { padding: 72px 0 0; }
+.cta-sec { padding: 32px 0 96px; }
+.banner { display: flex; align-items: center; gap: 28px; padding: 32px 40px; border-radius: 20px; background: linear-gradient(100deg, var(--primary-tint), #fff 70%); border: 1px solid var(--primary-line); box-shadow: var(--shadow-sm); }
+.banner .icon { width: 64px; height: 64px; border-radius: 18px; background: #fff; color: var(--primary); display: grid; place-items: center; flex: none; border: 1px solid var(--primary-line); box-shadow: var(--shadow-sm); }
+.banner .icon .ico { width: 32px; height: 32px; }
+.banner h2 { font-size: 22px; line-height: 1.4; color: var(--navy-950); font-weight: 750; }
+.banner p { margin-top: 4px; color: var(--g700); }
+.banner .btn { margin-left: auto; }
+
+/* ---------- 收尾行动号召 ---------- */
+.cta-card { position: relative; overflow: hidden; text-align: center; padding: 56px 32px; border-radius: 24px; color: #dbe6f0; background:
+  radial-gradient(520px 300px at 15% 0%, rgba(45, 140, 200, .3), transparent 70%),
+  radial-gradient(420px 300px at 90% 100%, rgba(20, 184, 166, .2), transparent 70%),
+  linear-gradient(160deg, var(--navy-800), var(--navy-950)); box-shadow: var(--shadow-lg); }
+.cta-card h2 { font-size: 28px; line-height: 1.35; color: #fff; font-weight: 750; }
+.cta-card p { margin: 12px auto 0; max-width: 34em; color: #c3d3e2; }
+.cta-card .cta { justify-content: center; margin-top: 28px; }
+.cta-card :focus-visible { outline-color: #5eead4; }
+
+/* ---------- 常见问题 ---------- */
+.faq-layout { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: 64px; align-items: start; }
+.faq-layout .sec-head { margin-bottom: 0; position: sticky; top: calc(var(--nav-h) + 32px); }
+.faq { border-top: 1px solid var(--g200); }
+.faq details { border-bottom: 1px solid var(--g200); }
+.faq summary { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 22px 0; cursor: pointer; list-style: none; font-size: 17px; font-weight: 600; color: var(--navy-950); transition: color .15s; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { color: var(--primary); }
+.faq summary::after { content: ""; flex: none; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--g300); background:
+  linear-gradient(var(--g700), var(--g700)) center / 12px 1.75px no-repeat,
+  linear-gradient(var(--g700), var(--g700)) center / 1.75px 12px no-repeat, #fff; transition: transform .25s, background-color .2s, border-color .2s; }
+.faq details[open] summary::after { transform: rotate(45deg); border-color: var(--primary); }
+.faq .answer { padding: 0 52px 24px 0; color: var(--g700); }
+.faq .answer p + p { margin-top: 10px; }
+.faq .answer ul { margin-top: 10px; display: grid; gap: 6px; }
+.faq .answer li { position: relative; padding-left: 18px; }
+.faq .answer li::before { content: ""; position: absolute; left: 4px; top: 12px; width: 5px; height: 5px; border-radius: 50%; background: var(--g300); }
+.faq .answer code, .answer kbd { font-size: 14px; background: var(--g100); color: var(--g900); border: 1px solid var(--g200); border-bottom-width: 2px; border-radius: 5px; padding: 0 6px; }
+.faq .answer a { color: var(--primary); }
+
+/* ---------- 页脚 ---------- */
+.site-footer { background: var(--navy-950); color: #c3d0dd; padding: 56px 0 24px; font-size: 14px; line-height: 1.7; }
+.site-footer a { color: #8fc2ec; }
+.footer-grid { display: grid; grid-template-columns: 1fr auto; gap: 64px; align-items: start; }
+.footer-legal h4 { margin-bottom: 8px; font-size: 15px; font-weight: 600; color: #fff; }
+.footer-legal .footer-note { margin-top: 12px; font-size: 13px; color: #8d9bad; }
+.footer-legal b { color: #fff; font-weight: 600; }
+.footer-contact { display: flex; align-items: center; gap: 16px; }
+.footer-contact img { width: 108px; height: 108px; flex: none; padding: 6px; background: #fff; border-radius: 10px; image-rendering: pixelated; }
+.footer-contact .contact-sub { color: #8d9bad; font-size: 13px; }
+.footer-contact .contact-link { display: inline-block; margin-top: 6px; font-size: 13px; }
+.footer-bottom { margin-top: 32px; padding-top: 16px; border-top: 1px solid #25384c; font-size: 13px; color: #8d9bad; }
+.site-footer :focus-visible { outline-color: #5eead4; }
+
+
+/* ---------- 悬浮联系框（只在落地页） ---------- */
+.float[hidden] { display: none; }
+html.fl-lock { overflow: hidden; }
+.fl-tab, .fl-fab { z-index: 60; border: 0; cursor: pointer; font: inherit; background: var(--primary); color: #fff; box-shadow: var(--shadow-md); transition: background-color .18s, transform .18s, opacity .2s; }
+.fl-tab:hover, .fl-fab:hover { background: var(--primary-dark); }
+.float.fl-away .fl-tab, .float.fl-away .fl-fab { opacity: 0; visibility: hidden; pointer-events: none; }
+.fl-panel { z-index: 62; background: #fff; display: flex; flex-direction: column; visibility: hidden; transition: opacity .22s, transform .25s cubic-bezier(.2, .7, .2, 1), visibility 0s .25s; }
+.float.open .fl-panel { visibility: visible; transition-delay: 0s; }
+.fl-panel h2 { font-size: 16px; line-height: 1.5; color: var(--navy-950); font-weight: 700; }
+.fl-desc { font-size: 14px; line-height: 1.65; color: var(--g700); }
+.fl-qr { width: 120px; height: 120px; padding: 6px; background: #fff; border: 1px solid var(--g200); border-radius: 12px; image-rendering: pixelated; align-self: center; }
+.fl-add { font-size: 14px; font-weight: 600; text-decoration: none; }
+.fl-add:hover { text-decoration: underline; }
+.fl-add .m, .fl-qr-tip { display: none; }
+.fl-close { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--g500); display: grid; place-items: center; cursor: pointer; transition: background-color .15s, color .15s; }
+.fl-close:hover { background: var(--g100); color: var(--g900); }
+.fl-close .ico { width: 18px; height: 18px; }
+@media (min-width: 1024px) {
+  .fl-fab, .fl-backdrop { display: none; }
+  .fl-tab { position: fixed; right: 0; top: 62%; transform: translateY(-50%); width: 40px; padding: 16px 0 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; border-radius: 12px 0 0 12px; font-size: 14px; font-weight: 600; letter-spacing: 3px; }
+  .fl-tab:hover { transform: translate(-2px, -50%); }
+  .fl-tab .ico { width: 20px; height: 20px; }
+  .fl-tab-text { writing-mode: vertical-rl; line-height: 1; }
+  .float.open .fl-tab { opacity: 0; visibility: hidden; pointer-events: none; }
+  .fl-panel { position: fixed; right: 16px; top: 62%; width: 248px; padding: 20px; gap: 6px; border: 1px solid var(--g200); border-radius: 16px; box-shadow: var(--shadow-lg); opacity: 0; transform: translate(14px, -50%); }
+  .float.open .fl-panel { opacity: 1; transform: translate(0, -50%); }
+  .fl-qr { order: 1; margin-bottom: 8px; }
+  .fl-panel h2 { order: 2; padding-right: 20px; }
+  .fl-desc { order: 3; }
+  .fl-add { order: 4; margin-top: 4px; }
+  .fl-add .d { display: inline; }
+}
+@media (max-width: 1023px) {
+  .fl-tab { display: none; }
+  .fl-fab { position: fixed; right: 16px; bottom: 16px; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 10px 24px -6px rgba(15, 42, 67, .5); }
+  .fl-fab:hover { transform: translateY(-2px); }
+  .fl-fab:active { transform: none; }
+  .fl-fab .ico { width: 26px; height: 26px; }
+  .fl-backdrop { position: fixed; inset: 0; z-index: 61; background: rgba(12, 28, 46, .5); opacity: 0; visibility: hidden; transition: opacity .25s, visibility 0s .25s; }
+  .float.open .fl-backdrop { opacity: 1; visibility: visible; transition-delay: 0s; }
+  .fl-panel { position: fixed; left: 0; right: 0; bottom: 0; max-height: 92vh; overflow-y: auto; padding: 28px 24px calc(24px + env(safe-area-inset-bottom)); gap: 12px; border-radius: 20px 20px 0 0; box-shadow: 0 -12px 40px -8px rgba(15, 42, 67, .3); transform: translateY(100%); }
+  .float.open .fl-panel { transform: none; }
+  .fl-panel h2 { font-size: 20px; padding-right: 36px; }
+  .fl-desc { font-size: 15px; }
+  .fl-close { top: 16px; right: 16px; width: 40px; height: 40px; }
+  .fl-add { order: 3; display: flex; align-items: center; justify-content: center; height: 52px; margin-top: 4px; border-radius: var(--radius-sm); background: var(--primary); color: #fff; font-size: 16px; box-shadow: 0 6px 16px -6px rgba(29, 92, 140, .6); transition: background-color .18s, transform .18s; }
+  .fl-add:hover { background: var(--primary-dark); text-decoration: none; }
+  .fl-add:active { background: var(--navy-900); transform: translateY(1px); }
+  .fl-add .d { display: none; }
+  .fl-add .m { display: inline; }
+  .fl-qr { order: 4; margin-top: 8px; }
+  .fl-qr-tip { order: 5; display: block; text-align: center; font-size: 13px; color: var(--g500); }
+}
+
+/* ---------- 响应式 ---------- */
+@media (min-width: 768px) {
+  .cta-card h2 { font-size: 30px; }
+  .hero h1 { font-size: 40px; }
+  .sec-head h2, .privacy h2 { font-size: 30px; }
+}
+@media (min-width: 1100px) {
+  .cta-card h2 { font-size: 32px; }
+  .hero h1 { font-size: 48px; }
+  .sec-head h2, .privacy h2 { font-size: 32px; }
+}
+@media (max-width: 1060px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .trust ul { grid-template-columns: repeat(2, 1fr); }
+  .trust li:nth-child(3) { border-left: 0; padding-left: 0; }
+  .trust li:nth-child(n+3) { border-top: 1px solid var(--g200); }
+}
+@media (max-width: 960px) {
+  .chip { display: none; }
+  .faq-layout { grid-template-columns: 1fr; gap: 32px; }
+  .faq-layout .sec-head { position: static; margin-bottom: 0; }
+  .hero { padding: 48px 0 64px; }
+  .hero .container { grid-template-columns: 1fr; gap: 48px; }
+  .hero-visual { max-width: 600px; }
+  .privacy { grid-template-columns: 1fr; gap: 32px; padding: 40px 32px; }
+  .privacy-visual { order: -1; }
+  .steps { grid-template-columns: 1fr; gap: 32px; }
+  .step:not(:last-child)::after { display: none; }
+  .step { display: grid; grid-template-columns: 44px 1fr; gap: 0 18px; }
+  .step-head { grid-row: 1 / span 2; margin: 0; flex-direction: column; align-items: center; }
+  .step-line { width: 1px; height: auto; background: linear-gradient(var(--g300), transparent); min-height: 24px; }
+  .step-no + .step-line { display: block; }
+  .banner { flex-wrap: wrap; }
+  .banner .btn { margin-left: 0; }
+}
+@media (max-width: 860px) {
+  .report { grid-template-columns: 1fr; padding: 16px 20px; gap: 6px; }
+  .report .pill { justify-self: start; order: -1; }
+  .reports-head, .reports-note { padding-left: 20px; padding-right: 20px; }
+}
 @media (max-width: 720px) {
-  .hero { padding-top: 24px; }
-  .hero h2 { font-size: 22px; }
-  .cards { grid-template-columns: 1fr; }
-  .cta { flex-direction: column; }
-  .btn { width: 100%; }
-  .btn.small { width: auto; }
-  h1 { font-size: 18px; }
-  section.panel { padding: 16px 16px 18px; }
-  .contact { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .container { padding: 0 20px; }
+  .nav .container { gap: 12px; }
+  .nav-links, .nav-tag { display: none; }
+  .nav .btn { margin-left: auto; }
+  .brand { font-size: 16px; }
+  .section { padding: 64px 0; }
+  .sec-head { margin-bottom: 32px; }
+  .hero .lead { font-size: 17px; }
+  .cta .btn { flex: 1 1 100%; }
+  .cards { grid-template-columns: 1fr; gap: 12px; }
+  .card { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 8px 12px; padding: 16px; }
+  .card-top { display: contents; }
+  .card .icon { grid-column: 1; grid-row: 1; width: 40px; height: 40px; border-radius: 10px; }
+  .card h3 { grid-column: 2; grid-row: 1; font-size: 16px; }
+  .card .num { grid-column: 3; grid-row: 1; align-self: start; font-size: 13px; }
+  .card p { grid-column: 1 / -1; grid-row: 2; margin-top: 0; font-size: 15px; line-height: 1.65; }
+  .card .tagline { grid-column: 1 / -1; grid-row: 3; justify-self: start; margin-top: 0; }
+  .trust ul { grid-template-columns: repeat(2, 1fr); }
+  .trust li, .trust li:first-child, .trust li:nth-child(3) { flex-direction: column; gap: 8px; padding: 18px 0 18px 16px; border-left: 1px solid var(--g200); }
+  .trust li:nth-child(odd) { border-left: 0; padding-left: 0; padding-right: 16px; }
+  .trust li:nth-child(n+3) { border-top: 1px solid var(--g200); }
+  .trust .ico { width: 24px; height: 24px; margin-top: 0; }
+  .trust b { font-size: 15px; }
+  .trust span { font-size: 13.5px; }
+  .privacy { padding: 32px 20px; border-radius: 20px; }
+  .verify { padding: 16px; }
+  .offline-sec { padding: 48px 0 0; }
+  .cta-sec { padding: 24px 0 64px; }
+  .cta-card { padding: 40px 20px; border-radius: 20px; }
+  .cta-card .cta .btn { flex: 1 1 100%; }
+  .banner { padding: 24px 20px; gap: 16px; }
+  .banner .btn { width: 100%; }
+  .faq summary { font-size: 16px; padding: 18px 0; gap: 16px; }
+  .faq .answer { padding-right: 0; }
+  .callout { padding: 16px; gap: 12px; }
+  .site-footer { padding: 40px 0 24px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .footer-contact { order: -1; flex-direction: column; text-align: center; gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="wrap">
-    <div class="logo" aria-hidden="true">差</div>
-    <h1>亚马逊涉税报送差异拆解 <span class="tag">免费版</span></h1>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/><path d="M12 15v2"/></symbol>
+  <symbol id="i-offline" viewBox="0 0 24 24"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.8a9.5 9.5 0 0 1 13 0"/><path d="M8.7 16.4a5 5 0 0 1 6.6 0"/><path d="M12 19.8h.01"/><path d="M4 3.5l16 17"/></symbol>
+  <symbol id="i-trace" viewBox="0 0 24 24"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></symbol>
+  <symbol id="i-free" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v9H5v-9"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></symbol>
+  <symbol id="i-fx" viewBox="0 0 24 24"><path d="M4 8h15M15 4l4 4-4 4"/><path d="M20 16H5M9 12l-4 4 4 4"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20 12.5 12.5 20a2 2 0 0 1-2.8 0L3 13.3V4h9.3l7.7 7.7a1 1 0 0 1 0 .8Z"/><circle cx="8" cy="8.5" r="1"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16M7 20v-8M12 20V5M17 20v-5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7.5 10.5 12 15l4.5-4.5M4 20h16"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3.5 20.5l1.6-4.6A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m10 8.5 5 3.5-5 3.5v-7Z"/></symbol>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="container">
+    <a class="brand" href="#top" aria-label="亚马逊涉税报送差异拆解，回到顶部">
+      <span class="logo" aria-hidden="true">差</span>
+      <span>亚马逊涉税报送差异拆解</span>
+    </a>
+    <span class="nav-tag">免费版</span>
+    <nav class="nav-links" aria-label="页面导航">
+      <a href="#breakdown">怎么拆</a>
+      <a href="#privacy">隐私</a>
+      <a href="#faq">常见问题</a>
+    </nav>
+    <a class="btn primary sm" href="tool.html">免费使用</a>
   </div>
 </header>
 
-<main class="wrap">
-  <div class="hero">
-    <h2>把“税局收到的亚马逊报送数”和“后台数”之间的差额，拆开讲清楚</h2>
-    <p>把亚马逊发来的季度涉税报告，加上卖家后台导出的报告拖进网页，差额会被拆成汇率、收入构成、代收代缴税费、时间口径等几项原因，每一项都能追到原始文件的具体行，也能导出 Excel。</p>
-    <div class="cta">
-      <a class="btn primary" href="tool.html">打开工具</a>
-      <a class="btn accent" href="tool.html?demo=1">先看示例</a>
-    </div>
-    <p class="muted" style="font-size:13.5px">示例数据全部是虚构的，不需要准备任何文件。</p>
-  </div>
+<main id="top">
+  <section class="hero">
+    <div class="container">
+      <div class="hero-text">
+        <div class="free-pill"><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>免费 · 不用注册 · 不限次数</div>
+        <h1>税局说你少报了？<span>先把差额拆清楚</span></h1>
+        <p class="lead">把亚马逊的季度涉税报告和卖家后台的报告拖进网页，报送数和后台数之间的差额会被拆成汇率、税费、时间口径等几项，每一项都能追到原始文件的行。</p>
+        <div class="cta">
+          <a class="btn primary" href="tool.html"><span class="free">免费</span>打开工具 <svg class="ico arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="btn" href="tool.html?demo=1"><svg class="ico" aria-hidden="true"><use href="#i-play"/></svg>先看示例</a>
+        </div>
+        <p class="cta-note"><span><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>免费使用</span><span><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>不用注册</span><span><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg>数据不上传</span></p>
+      </div>
 
-  <section class="panel">
-    <h3>能处理哪些报告</h3>
-    <div class="cards">
-      <div class="card"><b>季度报告</b><span>亚马逊邮件里的季度涉税报告（xlsx），多个卖家记号、多个季度可以一起传。</span></div>
-      <div class="card"><b>日期范围报告</b><span>卖家后台“日期范围报告”里的交易报告（csv），每个站点一份，日期选整季。</span></div>
-      <div class="card"><b>亚马逊配送货件报告</b><span>报告 → 配送 → 亚马逊配送货件（txt），逐月导出。用来按发货日对齐季度，强烈建议提供。</span></div>
-    </div>
-    <p class="muted" style="margin-top:12px;font-size:13.5px">另外还可以选择性提供 fees 逐笔费用文件、欧洲站增值税交易报告（VTR），用来核对费用和代收增值税。导出前请先把卖家后台切换到英文界面。</p>
-  </section>
-
-  <section class="panel privacy">
-    <h3>隐私：你的数据不会离开你的电脑</h3>
-    <ul>
-      <li>所有计算都在你自己的浏览器里完成，<b>文件不上传</b>，没有服务器接收你的数据。</li>
-      <li>工具页设置了内容安全策略，浏览器层面禁止它发出任何网络请求，<b>断网也能用</b>。</li>
-      <li>想自己验证？打开工具页，按 <code>F12</code> 打开开发者工具，切到“网络（Network）”，再拖入文件计算：除了打开页面本身，列表里不会出现任何请求。</li>
-    </ul>
-  </section>
-
-  <section class="panel offline">
-    <h3>离线版</h3>
-    <p>也可以把工具下载成一个 HTML 文件，双击用浏览器打开就能用，不需要网络，内容和在线工具页一致。</p>
-    <a class="btn small" href="https://github.com/Sunruising/baosong/releases/latest/download/baosong-offline.html">下载离线版</a>
-  </section>
-
-  <section class="panel" id="contact">
-    <h3>联系我们</h3>
-    <div class="contact">
-      <img src="data:image/png;base64,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" width="160" height="160" alt="企业微信二维码">
-      <div class="contact-text">
-        <p>对不上、算不清、想批量用或要定制，扫码加企业微信聊。发文件前请先去掉店铺名、订单号等敏感信息。</p>
-        <a class="btn small accent" href="https://work.weixin.qq.com/u/vca844afe8424cde7c?src=wx&amp;bb=f8" rel="noopener">手机上点这里添加</a>
+      <div class="hero-visual">
+        <figure class="diagram" style="margin:0" aria-label="差异桥接示意图：从后台 Income 出发，依次加减汇率、收入构成、代收代缴税费、时间口径、残差，得到报送收入净额">
+          <div class="diagram-head">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <b>差异桥接</b>
+            <span class="free-tag">免费</span>
+            <span class="badge">示意</span>
+          </div>
+          <div class="diagram-body">
+            <svg viewBox="0 0 480 284" role="img" aria-label="横向瀑布图：后台 Income 82,000，汇率减 1,500，收入构成减 2,000，代收代缴税费加 9,000，时间口径加 3,500，残差加 300，报送收入净额 91,300。数字为举例。">
+              <g font-size="14" fill="#38434f">
+                <!-- 行：y 为行顶，行高 40，条高 20 -->
+                <text x="0" y="29" font-weight="700" fill="#0c1c2e">后台 Income</text>
+                <text x="0" y="69">汇率</text>
+                <text x="0" y="109">收入构成</text>
+                <text x="0" y="149">代收代缴税费</text>
+                <text x="0" y="189">时间口径</text>
+                <text x="0" y="229">残差</text>
+                <text x="0" y="269" font-weight="700" fill="#0c1c2e">报送收入净额</text>
+              </g>
+              <!-- 连接线 -->
+              <g stroke="#cbd3dd" stroke-width="1" stroke-dasharray="3 3">
+                <path d="M259.5 30V50M227.6 70V90M185.1 110V130M376.4 150V170M450.8 190V210M457.1 230V250"/>
+              </g>
+              <!-- 起点 -->
+              <rect x="132" y="16" width="127.5" height="20" rx="4" fill="#153a5a"/>
+              <path d="M146 14l-5 24h5l5-24Z" fill="#fff"/>
+              <text x="253" y="30.5" font-size="13" font-weight="600" fill="#fff" text-anchor="end">82,000</text>
+              <!-- 汇率 -2 -->
+              <rect x="227.6" y="56" width="31.9" height="20" rx="4" fill="#b45309"/>
+              <text x="267" y="70.5" font-size="13" fill="#38434f">−1,500</text>
+              <!-- 收入构成 -->
+              <rect x="185.1" y="96" width="42.5" height="20" rx="4" fill="#b45309"/>
+              <text x="235" y="110.5" font-size="13" fill="#38434f">−2,000</text>
+              <!-- 代收代缴税费 -->
+              <rect x="185.1" y="136" width="191.3" height="20" rx="4" fill="#0f766e"/>
+              <text x="384" y="150.5" font-size="13" fill="#38434f">+9,000</text>
+              <!-- 时间口径 -->
+              <rect x="376.4" y="176" width="74.4" height="20" rx="4" fill="#0f766e"/>
+              <text x="370" y="190.5" font-size="13" fill="#38434f" text-anchor="end">+3,500</text>
+              <!-- 残差 -->
+              <rect x="450.8" y="216" width="6.3" height="20" rx="2" fill="#0f766e"/>
+              <text x="444" y="230.5" font-size="13" fill="#38434f" text-anchor="end">+300</text>
+              <!-- 终点 -->
+              <rect x="132" y="256" width="325.1" height="20" rx="4" fill="#153a5a"/>
+              <path d="M146 254l-5 24h5l5-24Z" fill="#fff"/>
+              <text x="451" y="270.5" font-size="13" font-weight="600" fill="#fff" text-anchor="end">91,300</text>
+            </svg>
+          </div>
+          <div class="diagram-foot">
+            <span class="key"><i style="background:#153a5a"></i>起点 / 终点</span>
+            <span class="key"><i style="background:#0f766e"></i>使报送数更高</span>
+            <span class="key"><i style="background:#b45309"></i>使报送数更低</span>
+          </div>
+          <div class="diagram-note"><span><b>起点 + 各项 = 终点</b>，精确到分</span><span>示意：数字为举例，横轴已截断</span></div>
+        </figure>
+        <div class="chip" aria-hidden="true"><i></i><span>拆不清的，标成<b>“需人工确认”</b></span></div>
       </div>
     </div>
   </section>
 
-  <section class="panel disclaimer">
-    <h3>免责声明</h3>
-    <p>本工具只做数据整理和差异解释，<b>不构成税务意见</b>。它不计算应补多少税、应申报多少，也不评价哪种申报口径是否合规。涉及申报和补税的决定，请咨询你的税务顾问。</p>
+  <section class="trust" aria-label="工具特点">
+    <div class="container">
+      <ul>
+        <li><svg class="ico" aria-hidden="true"><use href="#i-free"/></svg><div><b>免费使用</b><span>不注册、不限次数、不收费</span></div></li>
+        <li><svg class="ico" aria-hidden="true"><use href="#i-lock"/></svg><div><b>数据不出浏览器</b><span>只在你电脑里计算，不上传</span></div></li>
+        <li><svg class="ico" aria-hidden="true"><use href="#i-offline"/></svg><div><b>断网也能用</b><span>页面不联网，有离线版</span></div></li>
+        <li><svg class="ico" aria-hidden="true"><use href="#i-trace"/></svg><div><b>每一项能追到原始行</b><span>点开看文件名和行号</span></div></li>
+      </ul>
+    </div>
   </section>
 
-  <section class="panel">
-    <h3>反馈</h3>
-    <p>反馈：知无不言社区帖子（链接稍后补）</p>
+  <section class="section alt" id="breakdown">
+    <div class="container">
+      <div class="sec-head">
+        <div class="eyebrow">怎么拆</div>
+        <h2>差额，拆成这几块</h2>
+        <p>工具把“后台 Income”到“报送收入净额”之间的差额，拆成下面这些项目。起点加上各项，正好等于报送数。</p>
+      </div>
+      <div class="cards">
+        <article class="card"><div class="card-top"><span class="icon"><svg class="ico" aria-hidden="true"><use href="#i-fx"/></svg></span><span class="num">01</span></div><h3>汇率</h3><p>你选的汇率（月初、月均或自定义）和每天的人民币中间价不一样，两边折出来的数会差一点。</p></article>
+        <article class="card"><div class="card-top"><span class="icon"><svg class="ico" aria-hidden="true"><use href="#i-layers"/></svg></span><span class="num">02</span></div><h3>收入构成</h3><p>后台 Income 里有、报送收入不含的，比如 FBA 库存赔偿、清货、A-to-z 索赔、Chargeback、SAFE-T。</p></article>
+        <article class="card hot"><div class="card-top"><span class="icon"><svg class="ico" aria-hidden="true"><use href="#i-receipt"/></svg></span><span class="num">03</span></div><h3>代收代缴税费</h3><p>订单里的销售税、增值税、GST 等。报送收入含税，后台 Income 不含。</p></article>
+        <article class="card"><div class="card-top"><span class="icon"><svg class="ico" aria-hidden="true"><use href="#i-tag"/></svg></span><span class="num">04</span></div><h3>附加费</h3><p>订单和退款行里的 Regulatory Fee 本身，单独列出来。</p></article>
+        <article class="card"><div class="card-top"><span class="icon"><svg class="ico" aria-hidden="true"><use href="#i-clock"/></svg></span><span class="num">05</span></div><h3>时间口径</h3><p>按发货日算，还是按入账日算，订单会落在不同的季度。需要配送货件报告才能拆清。</p></article>
+        <article class="card"><div class="card-top"><span class="icon"><svg class="ico" aria-hidden="true"><use href="#i-undo"/></svg></span><span class="num">06</span></div><h3>退款跨期</h3><p>本季退款里，原订单不在本季发货的金额。只列出来供参考，默认按 0 计。</p><span class="tagline tag-info">信息项</span></article>
+        <article class="card"><div class="card-top"><span class="icon"><svg class="ico" aria-hidden="true"><use href="#i-globe"/></svg></span><span class="num">07</span></div><h3>站点或店铺覆盖</h3><p>报送里有、但你没上传的站点，会标成缺数据；后台有、报送里没有的，也会列出。</p></article>
+        <article class="card"><div class="card-top"><span class="icon"><svg class="ico" aria-hidden="true"><use href="#i-search"/></svg></span><span class="num">08</span></div><h3>残差</h3><p>按亚马逊口径重建之后，仍然对不上的部分。这一块没有原始行可追，会单独标出。</p></article>
+      </div>
+      <div class="callout">
+        <svg class="ico" aria-hidden="true"><use href="#i-info"/></svg>
+        <p>拆不清的，会标成<b>“需人工确认”</b>，不替你下结论。工具只做数据整理和差异解释，不计算应补多少税。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="steps">
+    <div class="container">
+      <div class="sec-head">
+        <div class="eyebrow">怎么用</div>
+        <h2>三步用起来</h2>
+        <p>不用装软件，不用建表格。准备好报告，拖进页面就行。</p>
+      </div>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-head"><span class="step-no">1</span><span class="step-line"></span></div>
+          <div><h3>下载报告</h3><p>从亚马逊邮件里下载季度涉税报告，再从卖家后台导出日期范围报告和亚马逊配送货件报告。</p></div>
+        </li>
+        <li class="step">
+          <div class="step-head"><span class="step-no">2</span><span class="step-line"></span></div>
+          <div><h3>拖进页面</h3><p>把文件一起拖进工具页。它按表头自动识别每个文件是哪一类，再请你确认站点归属、季度和汇率口径。</p></div>
+        </li>
+        <li class="step">
+          <div class="step-head"><span class="step-no">3</span><span class="step-line"></span></div>
+          <div><h3>看拆解，导出给会计</h3><p>看差异桥接表，点开任意一项看它由哪些原始行组成；一键导出 Excel，交给会计。</p></div>
+        </li>
+      </ol>
+
+      <div class="reports">
+        <div class="reports-head"><svg class="ico" aria-hidden="true"><use href="#i-file"/></svg>需要准备哪些报告</div>
+        <div class="report"><div class="name">季度报告<small>xlsx</small></div><div class="how">亚马逊邮件里的季度涉税报告。多个卖家记号、多个季度可以一起传。</div><span class="pill must">必需</span></div>
+        <div class="report"><div class="name">日期范围报告<small>csv</small></div><div class="how">卖家后台“日期范围报告”里的交易报告，每个站点一份，日期选整季。</div><span class="pill must">必需</span></div>
+        <div class="report"><div class="name">亚马逊配送货件报告<small>txt</small></div><div class="how">报告 → 配送 → 亚马逊配送货件，逐月导出。用来按发货日对齐季度。</div><span class="pill rec">强烈建议</span></div>
+        <div class="report"><div class="name">fees 逐笔费用文件</div><div class="how">用来逐类核对费用。</div><span class="pill opt">可选</span></div>
+        <div class="report"><div class="name">欧洲站增值税交易报告<small>VTR</small></div><div class="how">用来核对代收的增值税，欧洲站建议提供。</div><span class="pill opt">可选</span></div>
+        <div class="reports-note"><svg class="ico sm" aria-hidden="true"><use href="#i-info"/></svg><p><b>导出前，请先把卖家后台切换到英文界面。</b>工具按英文列名识别文件。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="privacy">
+    <div class="container">
+      <div class="privacy">
+        <div class="privacy-visual">
+          <svg viewBox="0 0 360 240" role="img" aria-label="示意图：文件和计算都在你的浏览器里完成，和服务器之间没有任何数据传输">
+            <rect x="8" y="34" width="208" height="168" rx="14" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/>
+            <path d="M8 66h208" stroke="rgba(255,255,255,.25)"/>
+            <circle cx="28" cy="50" r="4" fill="rgba(255,255,255,.35)"/><circle cx="42" cy="50" r="4" fill="rgba(255,255,255,.35)"/><circle cx="56" cy="50" r="4" fill="rgba(255,255,255,.35)"/>
+            <g transform="translate(76 80) scale(2.5)" fill="none" stroke="#5eead4" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/><path d="M12 15v2"/></g>
+            <text x="112" y="168" font-size="15" font-weight="600" fill="#fff" text-anchor="middle">你的浏览器</text>
+            <text x="112" y="188" font-size="12.5" fill="#b4c6d8" text-anchor="middle">文件 · 计算 · 结果</text>
+            <path d="M222 118h70" stroke="rgba(255,255,255,.45)" stroke-width="1.75" stroke-dasharray="5 5" stroke-linecap="round"/>
+            <circle cx="257" cy="118" r="13" fill="#0f2a43" stroke="#fda4af" stroke-width="1.75"/>
+            <path d="m252 113 10 10M262 113l-10 10" stroke="#fda4af" stroke-width="2" stroke-linecap="round"/>
+            <g transform="translate(296 92) scale(2.3)" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></g>
+            <text x="322" y="164" font-size="14" fill="#c3d3e2" text-anchor="middle">服务器</text>
+            <text x="322" y="184" font-size="12.5" fill="#fda4af" text-anchor="middle">没有请求</text>
+          </svg>
+        </div>
+        <div>
+          <div class="eyebrow">隐私</div>
+          <h2>你的数据不会离开电脑</h2>
+          <p class="lead">报告里有你的销售额和订单，所以这件事要讲清楚，也要能自己验证。</p>
+          <ul class="points">
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>所有计算都在你自己的浏览器里完成，<b>文件不上传</b>，没有服务器接收你的数据。</span></li>
+            <li><svg class="ico" aria-hidden="true"><use href="#i-check"/></svg><span>工具页设置了内容安全策略，浏览器层面禁止它发出任何网络请求，<b>断网也能用</b>。</span></li>
+          </ul>
+          <div class="verify">
+            <h3><svg class="ico sm" aria-hidden="true"><use href="#i-search"/></svg>想自己验证？四步就行</h3>
+            <ol>
+              <li>打开工具页，按 <kbd>F12</kbd> 打开开发者工具</li>
+              <li>切到“网络（Network）”标签</li>
+              <li>再把文件拖进页面开始计算</li>
+              <li>列表里除了打开页面本身，不会出现任何请求</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="offline-sec" id="offline">
+    <div class="container">
+      <div class="banner">
+        <span class="icon"><svg class="ico" aria-hidden="true"><use href="#i-offline"/></svg></span>
+        <div>
+          <h2>离线版：下载一个 HTML 文件，双击就能用</h2>
+          <p>用浏览器打开就行，断网也行，内容和在线工具页一致，同样免费。</p>
+        </div>
+        <a class="btn primary" href="https://github.com/Sunruising/baosong/releases/latest/download/baosong-offline.html"><svg class="ico" aria-hidden="true"><use href="#i-download"/></svg>免费下载离线版</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-sec" id="cta">
+    <div class="container">
+      <div class="cta-card">
+        <h2>现在就免费拆一次</h2>
+        <p>不用注册，不限次数。示例数据是虚构的，一键就能试。</p>
+        <div class="cta">
+          <a class="btn light" href="tool.html"><span class="free">免费</span>打开工具 <svg class="ico arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+          <a class="btn ghost" href="tool.html?demo=1"><svg class="ico" aria-hidden="true"><use href="#i-play"/></svg>先看示例</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt" id="faq">
+    <div class="container">
+      <div class="faq-layout">
+      <div class="sec-head">
+        <div class="eyebrow">常见问题</div>
+        <h2>你可能想先问这些</h2>
+        <p>没找到想问的，页面底部可以扫码联系。</p>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary>要钱吗？</summary>
+          <div class="answer"><p>不要。免费使用，不用注册，不限次数。</p><p>工具在你自己的浏览器里计算，用多少次都一样。</p></div>
+        </details>
+        <details>
+          <summary>我的数据安全吗？</summary>
+          <div class="answer">
+            <p>文件不会上传。所有计算都在你自己的浏览器里完成，工具页还设置了内容安全策略，浏览器层面禁止它发出任何网络请求。</p>
+            <p>想自己验证：打开工具页，按 <kbd>F12</kbd> 切到“网络（Network）”，再拖入文件计算，列表里除了打开页面本身，不会出现任何请求。</p>
+          </div>
+        </details>
+        <details>
+          <summary>能告诉我该补多少税吗？</summary>
+          <div class="answer">
+            <p>不能。工具只做数据整理和差异解释，不计算应补多少税、应申报多少，也不评价哪种申报口径是否合规。涉及申报和补税的决定，请咨询你的税务顾问。</p>
+          </div>
+        </details>
+        <details>
+          <summary>支持哪些站点和报告？</summary>
+          <div class="answer">
+            <p>报告：亚马逊的季度涉税报告（xlsx）、卖家后台的日期范围报告（csv）、亚马逊配送货件报告（txt）；可选 fees 逐笔费用文件、欧洲站增值税交易报告（VTR）。</p>
+            <p>站点：按各站点的币种折算人民币，有中间价的币种都能处理，包括美国、加拿大、墨西哥、英国、欧洲各站、日本、澳大利亚、新加坡、阿联酋、沙特等。巴西、印度、埃及等没有汇率数据的站点不折算，会整站列入“需人工确认”。</p>
+            <p>示例数据用美国、加拿大、墨西哥、德国站跑通过。其他站点如果文件识别不了，页面会提示，可以扫码联系我们。</p>
+          </div>
+        </details>
+        <details>
+          <summary>算出来对不上怎么办？</summary>
+          <div class="answer">
+            <p>先看结果页里标了“需人工确认”的项目和残差，里面写了为什么拆不清。还对不上，或者想批量处理、要定制，请<a href="#contact">拉到页面底部，扫码联系</a>。</p>
+          </div>
+        </details>
+        <details>
+          <summary>能导出给会计吗？</summary>
+          <div class="answer">
+            <p>可以。结果页一键导出 Excel，里面有说明、差异桥接、站点对比、明细溯源、费用对比、汇率使用、需人工确认和解析日志等表。</p>
+          </div>
+        </details>
+      </div>
+      </div>
+    </div>
   </section>
 </main>
 
-<footer>
-  <div class="wrap counter-note">本页只统计打开次数，工具页不联网。</div>
+<footer class="site-footer" id="contact">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-legal">
+        <h4>免责声明</h4>
+        <p>本工具只做数据整理和差异解释，<b>不构成税务意见</b>。它不计算应补多少税、应申报多少，也不评价哪种申报口径是否合规。涉及申报和补税的决定，请咨询你的税务顾问。</p>
+        <p class="footer-note">本页只统计打开次数；工具页不联网，数据只在你的浏览器里计算。</p>
+      </div>
+      <div class="footer-contact">
+        <img src="data:image/png;base64,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" width="108" height="108" alt="企业微信二维码">
+        <div>
+          <p>对不上、想批量用、要定制</p>
+          <p class="contact-sub">扫码加企业微信</p>
+          <a class="contact-link" href="https://work.weixin.qq.com/u/vca844afe8424cde7c?src=wx&amp;bb=f8" rel="noopener">手机上点这里添加</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 报送差异拆解 · 免费工具</div>
+  </div>
 </footer>
+<div class="float" id="float" hidden>
+  <button class="fl-tab" type="button" aria-expanded="false" aria-controls="fl-panel" aria-label="需要人工介入或定制？展开企业微信联系卡片"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg><span class="fl-tab-text">人工帮忙</span></button>
+  <button class="fl-fab" type="button" aria-expanded="false" aria-controls="fl-panel" aria-label="需要人工帮忙？添加企业微信"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg></button>
+  <div class="fl-backdrop" aria-hidden="true"></div>
+  <div class="fl-panel" id="fl-panel" role="dialog" aria-modal="false" aria-labelledby="fl-title">
+    <button class="fl-close" type="button" aria-label="收起联系框"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+    <h2 id="fl-title">需要人工介入或定制？</h2>
+    <p class="fl-desc">对不上、算不清、想批量用，扫码加企业微信</p>
+    <img class="fl-qr" width="120" height="120" alt="企业微信二维码">
+    <a class="fl-add" href="https://work.weixin.qq.com/u/vca844afe8424cde7c?src=wx&amp;bb=f8" rel="noopener"><span class="d">手机上点这里添加</span><span class="m">点这里添加企业微信</span></a>
+    <p class="fl-qr-tip">也可以用另一台设备扫上面的码</p>
+  </div>
+</div>
+<script>
+(function () {
+  var nav = document.getElementById('nav');
+  function onScroll() { nav.classList.toggle('scrolled', window.scrollY > 8); }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+})();
+// 悬浮联系框：二维码复用页脚那一份（不重复内嵌）；默认收起，不自动弹出
+(function () {
+  var root = document.getElementById('float');
+  var src = document.querySelector('#contact img');
+  if (!root || !src) return;
+  var tab = root.querySelector('.fl-tab'), fab = root.querySelector('.fl-fab');
+  var panel = document.getElementById('fl-panel'), closeBtn = root.querySelector('.fl-close');
+  panel.querySelector('.fl-qr').src = src.currentSrc || src.src;
+  var desk = window.matchMedia('(min-width: 1024px)');
+  var isOpen = false;
+  function trigger() { return desk.matches ? tab : fab; }
+  function remember(v) { try { if (v) sessionStorage.setItem('zb-float', '1'); else sessionStorage.removeItem('zb-float'); } catch (e) { /* 忽略 */ } }
+  function setOpen(open, focus) {
+    if (open === isOpen) return;
+    isOpen = open;
+    var modal = !desk.matches;
+    root.classList.toggle('open', open);
+    tab.setAttribute('aria-expanded', String(open)); fab.setAttribute('aria-expanded', String(open));
+    panel.setAttribute('aria-modal', String(open && modal));
+    document.documentElement.classList.toggle('fl-lock', open && modal);
+    if (!modal) remember(open);
+    if (open && focus) closeBtn.focus();
+    if (!open && panel.contains(document.activeElement)) trigger().focus();
+  }
+  tab.addEventListener('click', function () { setOpen(!isOpen, true); });
+  fab.addEventListener('click', function () { setOpen(true, true); });
+  closeBtn.addEventListener('click', function () { setOpen(false); });
+  root.querySelector('.fl-backdrop').addEventListener('click', function () { setOpen(false); });
+  tab.addEventListener('mouseenter', function () { if (desk.matches && window.matchMedia('(hover: hover)').matches) setOpen(true, false); });
+  document.addEventListener('keydown', function (e) {
+    if (!isOpen) return;
+    if (e.key === 'Escape') { setOpen(false); return; }
+    if (e.key === 'Tab' && !desk.matches) {
+      var f = [closeBtn, panel.querySelector('.fl-add')];
+      var i = f.indexOf(document.activeElement);
+      if (e.shiftKey && i <= 0) { e.preventDefault(); f[1].focus(); }
+      else if (!e.shiftKey && i === 1) { e.preventDefault(); f[0].focus(); }
+      else if (i < 0) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+  var onChange = function () { if (isOpen) setOpen(false); document.documentElement.classList.remove('fl-lock'); };
+  if (desk.addEventListener) desk.addEventListener('change', onChange); else if (desk.addListener) desk.addListener(onChange);
+  // 滚到页脚时收起浮动入口，不挡页脚的二维码
+  var foot = document.getElementById('contact');
+  if ('IntersectionObserver' in window && foot) {
+    new IntersectionObserver(function (es) { root.classList.toggle('fl-away', es[0].isIntersecting); }, { threshold: 0 }).observe(foot);
+  }
+  // 只恢复用户本次访问里自己展开过的状态（电脑）；首次进入一律收起
+  try { if (desk.matches && sessionStorage.getItem('zb-float') === '1') setOpen(true, false); } catch (e) { /* 忽略 */ }
+  root.hidden = false;
+})();
+</script>
 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>
