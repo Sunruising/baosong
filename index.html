@@ -246,7 +246,11 @@ kbd { font: inherit; font-size: 13px; background: rgba(255, 255, 255, .14); bord
 .footer-contact { display: flex; align-items: center; gap: 16px; }
 .footer-contact img { width: 108px; height: 108px; flex: none; padding: 6px; background: #fff; border-radius: 10px; image-rendering: pixelated; }
 .footer-contact .contact-sub { color: #8d9bad; font-size: 13px; }
+.footer-contact > div { max-width: 280px; }
 .footer-contact .contact-link { display: inline-block; margin-top: 6px; font-size: 13px; }
+.footer-contact .contact-copy { display: none; margin-top: 8px; padding: 8px 16px; border: 0; border-radius: var(--radius-sm); background: var(--primary); color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.footer-contact .contact-copy:hover { background: var(--primary-dark); }
+.footer-contact .copy-status:empty { display: none; }
 .footer-bottom { margin-top: 32px; padding-top: 16px; border-top: 1px solid #25384c; font-size: 13px; color: #8d9bad; }
 .site-footer :focus-visible { outline-color: #5eead4; }
 
@@ -264,7 +268,12 @@ html.fl-lock { overflow: hidden; }
 .fl-qr { width: 120px; height: 120px; padding: 6px; background: #fff; border: 1px solid var(--g200); border-radius: 12px; image-rendering: pixelated; align-self: center; }
 .fl-add { font-size: 14px; font-weight: 600; text-decoration: none; }
 .fl-add:hover { text-decoration: underline; }
-.fl-add .m, .fl-qr-tip { display: none; }
+.fl-qr-tip, .fl-copy { display: none; }
+button.fl-add { border: 0; font-family: inherit; cursor: pointer; padding: 0; }
+.fl-scan, .fl-wxid { font-size: 14px; color: var(--g700); text-align: center; }
+.fl-wxid { font-size: 13px; color: var(--g500); }
+.fl-copied { font-size: 13px; color: var(--g700); text-align: center; }
+.fl-copied:empty { display: none; }
 .fl-close { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--g500); display: grid; place-items: center; cursor: pointer; transition: background-color .15s, color .15s; }
 .fl-close:hover { background: var(--g100); color: var(--g900); }
 .fl-close .ico { width: 18px; height: 18px; }
@@ -277,11 +286,12 @@ html.fl-lock { overflow: hidden; }
   .float.open .fl-tab { opacity: 0; visibility: hidden; pointer-events: none; }
   .fl-panel { position: fixed; right: 16px; top: 62%; width: 248px; padding: 20px; gap: 6px; border: 1px solid var(--g200); border-radius: 16px; box-shadow: var(--shadow-lg); opacity: 0; transform: translate(14px, -50%); }
   .float.open .fl-panel { opacity: 1; transform: translate(0, -50%); }
-  .fl-qr { order: 1; margin-bottom: 8px; }
-  .fl-panel h2 { order: 2; padding-right: 20px; }
-  .fl-desc { order: 3; }
-  .fl-add { order: 4; margin-top: 4px; }
-  .fl-add .d { display: inline; }
+  .fl-qr { order: 1; margin-bottom: 4px; }
+  .fl-scan { order: 2; margin-bottom: 8px; }
+  .fl-panel h2 { order: 3; padding-right: 20px; }
+  .fl-desc { order: 4; }
+  .fl-wxid { order: 5; }
+  .fl-add { order: 6; margin-top: 4px; }
 }
 @media (max-width: 1023px) {
   .fl-tab { display: none; }
@@ -299,8 +309,11 @@ html.fl-lock { overflow: hidden; }
   .fl-add { order: 3; display: flex; align-items: center; justify-content: center; height: 52px; margin-top: 4px; border-radius: var(--radius-sm); background: var(--primary); color: #fff; font-size: 16px; box-shadow: 0 6px 16px -6px rgba(29, 92, 140, .6); transition: background-color .18s, transform .18s; }
   .fl-add:hover { background: var(--primary-dark); text-decoration: none; }
   .fl-add:active { background: var(--navy-900); transform: translateY(1px); }
-  .fl-add .d { display: none; }
-  .fl-add .m { display: inline; }
+  .fl-scan { display: none; }
+  .fl-copied { order: 3; }
+  .fl-wxid { text-align: center; }
+  .fl-copy { display: flex; }
+  .footer-contact .contact-copy { display: inline-block; }
   .fl-qr { order: 4; margin-top: 8px; }
   .fl-qr-tip { order: 5; display: block; text-align: center; font-size: 13px; color: var(--g500); }
 }
@@ -650,7 +663,7 @@ html.fl-lock { overflow: hidden; }
       <div class="sec-head">
         <div class="eyebrow">常见问题</div>
         <h2>你可能想先问这些</h2>
-        <p>没找到想问的，页面底部可以扫码联系。</p>
+        <p>没找到想问的，页面底部可以联系我们。</p>
       </div>
       <div class="faq">
         <details open>
@@ -675,13 +688,13 @@ html.fl-lock { overflow: hidden; }
           <div class="answer">
             <p>报告：亚马逊的季度涉税报告（xlsx）、卖家后台的日期范围报告（csv）、亚马逊配送货件报告（txt）；可选 fees 逐笔费用文件、欧洲站增值税交易报告（VTR）。</p>
             <p>站点：按各站点的币种折算人民币，有中间价的币种都能处理，包括美国、加拿大、墨西哥、英国、欧洲各站、日本、澳大利亚、新加坡、阿联酋、沙特等。巴西、印度、埃及等没有汇率数据的站点不折算，会整站列入“需人工确认”。</p>
-            <p>示例数据用美国、加拿大、墨西哥、德国站跑通过。其他站点如果文件识别不了，页面会提示，可以扫码联系我们。</p>
+            <p>示例数据用美国、加拿大、墨西哥、德国站跑通过。其他站点如果文件识别不了，页面会提示，可以联系我们。</p>
           </div>
         </details>
         <details>
           <summary>算出来对不上怎么办？</summary>
           <div class="answer">
-            <p>先看结果页里标了“需人工确认”的项目和残差，里面写了为什么拆不清。还对不上，或者想批量处理、要定制，请<a href="#contact">拉到页面底部，扫码联系</a>。</p>
+            <p>先看结果页里标了“需人工确认”的项目和残差，里面写了为什么拆不清。还对不上，或者想批量处理、要定制，请<a href="#contact">拉到页面底部，联系我们</a>。</p>
           </div>
         </details>
         <details>
@@ -705,28 +718,25 @@ html.fl-lock { overflow: hidden; }
         <p class="footer-note">本页只统计打开次数；工具页不联网，数据只在你的浏览器里计算。</p>
       </div>
       <div class="footer-contact">
-        <img src="data:image/png;base64,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" width="108" height="108" alt="企业微信二维码">
         <div>
-          <p>对不上、想批量用、要定制</p>
-          <p class="contact-sub">扫码加企业微信</p>
-          <a class="contact-link" href="https://work.weixin.qq.com/u/vca844afe8424cde7c?src=wx&amp;bb=f8" rel="noopener">手机上点这里添加</a>
+          <p>需要人工介入或定制？</p>
+          <p class="contact-sub">对不上、算不清、想批量用，到知无不言的帖子下留言，或站内私信我们。</p>
+          <a class="contact-link" href="https://www.wearesellers.com/question/125674" target="_blank" rel="noopener">去帖子留言</a>
         </div>
       </div>
     </div>
     <div class="footer-bottom">© 2026 报送差异拆解 · 免费工具</div>
   </div>
 </footer>
-<div class="float" id="float" hidden>
-  <button class="fl-tab" type="button" aria-expanded="false" aria-controls="fl-panel" aria-label="需要人工介入或定制？展开企业微信联系卡片"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg><span class="fl-tab-text">人工帮忙</span></button>
-  <button class="fl-fab" type="button" aria-expanded="false" aria-controls="fl-panel" aria-label="需要人工帮忙？添加企业微信"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg></button>
+<div class="float" id="float" data-contact="forum" hidden>
+  <button class="fl-tab" type="button" aria-expanded="false" aria-controls="fl-panel" aria-label="需要人工介入或定制？展开联系卡片"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg><span class="fl-tab-text">人工帮忙</span></button>
+  <button class="fl-fab" type="button" aria-expanded="false" aria-controls="fl-panel" aria-label="需要人工帮忙？打开联系方式"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg></button>
   <div class="fl-backdrop" aria-hidden="true"></div>
   <div class="fl-panel" id="fl-panel" role="dialog" aria-modal="false" aria-labelledby="fl-title">
     <button class="fl-close" type="button" aria-label="收起联系框"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
     <h2 id="fl-title">需要人工介入或定制？</h2>
-    <p class="fl-desc">对不上、算不清、想批量用，扫码加企业微信</p>
-    <img class="fl-qr" width="120" height="120" alt="企业微信二维码">
-    <a class="fl-add" href="https://work.weixin.qq.com/u/vca844afe8424cde7c?src=wx&amp;bb=f8" rel="noopener"><span class="d">手机上点这里添加</span><span class="m">点这里添加企业微信</span></a>
-    <p class="fl-qr-tip">也可以用另一台设备扫上面的码</p>
+    <p class="fl-desc">对不上、算不清、想批量用，到知无不言的帖子下留言，或站内私信我们。</p>
+    <a class="fl-add" href="https://www.wearesellers.com/question/125674" target="_blank" rel="noopener">去帖子留言</a>
   </div>
 </div>
 <script>
@@ -736,14 +746,15 @@ html.fl-lock { overflow: hidden; }
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
 })();
-// 悬浮联系框：二维码复用页脚那一份（不重复内嵌）；默认收起，不自动弹出
+// 悬浮联系框：有二维码时复用页脚那一份（不重复内嵌）；默认收起，不自动弹出
 (function () {
   var root = document.getElementById('float');
   var src = document.querySelector('#contact img');
-  if (!root || !src) return;
+  if (!root) return;
   var tab = root.querySelector('.fl-tab'), fab = root.querySelector('.fl-fab');
   var panel = document.getElementById('fl-panel'), closeBtn = root.querySelector('.fl-close');
-  panel.querySelector('.fl-qr').src = src.currentSrc || src.src;
+  var fq = panel.querySelector('.fl-qr');
+  if (fq && src) fq.src = src.currentSrc || src.src;
   var desk = window.matchMedia('(min-width: 1024px)');
   var isOpen = false;
   function trigger() { return desk.matches ? tab : fab; }
@@ -778,7 +789,7 @@ html.fl-lock { overflow: hidden; }
   });
   var onChange = function () { if (isOpen) setOpen(false); document.documentElement.classList.remove('fl-lock'); };
   if (desk.addEventListener) desk.addEventListener('change', onChange); else if (desk.addListener) desk.addListener(onChange);
-  // 滚到页脚时收起浮动入口，不挡页脚的二维码
+  // 滚到页脚时收起浮动入口，不挡页脚的联系方式
   var foot = document.getElementById('contact');
   if ('IntersectionObserver' in window && foot) {
     new IntersectionObserver(function (es) { root.classList.toggle('fl-away', es[0].isIntersecting); }, { threshold: 0 }).observe(foot);
